@@ -149,7 +149,65 @@ app.post('/ingreso', async (req, res) => {
     }
 });
 
+app.post('/guardar-Servicios_Usu', async (req, res) => {
+    const { servicios, fechaHora } = req.body;
 
+    try {
+        if (!servicios || servicios.length === 0 || !fechaHora) {
+            return res.status(400).send("Datos faltantes: servicios o fecha y hora");
+        }
+
+        // Verificar sesión
+        console.log("Sesión actual:", req.session);
+        
+        if (!req.session.documento) {
+            return res.status(401).send("Sesión no válida");
+        }
+
+        const conect = await mysql2.createConnection(db);
+
+        // Obtener Código_mujer
+        const [usuarioData] = await conect.execute(
+            'SELECT Codigo_mujer FROM usuario WHERE documento = ?',
+            [req.session.documento]
+        );
+        if (usuarioData.length === 0) {
+            return res.status(404).send("Usuario no encontrado");
+        }
+        const Codigo_mujer = usuarioData[0].Codigo_mujer;
+
+        const formattedFechaHora = new Date(fechaHora).toISOString().slice(0, 19).replace("T", " ");
+
+        for (let servicio of servicios) {
+            // Obtener Código_servicios
+            const [servicioData] = await conect.execute(
+                'SELECT Codigo_servicios FROM servicios WHERE Nombre_servicio = ?',
+                [servicio]
+            );
+            if (servicioData.length === 0) {
+                return res.status(404).send(`Servicio ${servicio} no encontrado`);
+            }
+            const Codigo_servicios = servicioData[0].Codigo_servicios;
+
+            // Validar que no haya valores undefined
+            if (!formattedFechaHora || !Codigo_mujer || !Codigo_servicios) {
+                console.error('Datos inválidos:', { formattedFechaHora, Codigo_mujer, Codigo_servicios });
+                return res.status(400).send("Datos inválidos para la consulta");
+            }
+
+            // Insertar en solicitudes
+            await conect.execute(
+                'INSERT INTO solicitudes (Hora_asistencia, fk_Codigo_mujer2, fk_Codigo_servicios) VALUES (?, ?, ?)',
+                [formattedFechaHora, Codigo_mujer, Codigo_servicios]
+            );
+        }
+
+        res.status(200).send('Servicios guardados correctamente');
+    } catch (error) {
+        console.error('Error al guardar los servicios:', error.message);
+        res.status(500).send('Error interno del servidor');
+    }
+});
 
 
 
