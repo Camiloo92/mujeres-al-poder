@@ -17,38 +17,39 @@
     <div class="container">
         <h1>Panel de Administración</h1>
 
-            <!-- Gestión de Servicios -->
-            <div class="card">
-                <h3>Gestión de Servicios</h3>
-                <button id="btnCrear" class="button">Crear Servicio</button>
-                <button id="btnActualizar" class="button">Actualizar Servicio</button>
-            </div>
-    
-            <!-- Formulario de creación de servicio -->
-            <div id="crearServicio" style="display:none;">
-                <h3>Crear Servicio</h3>
-                <form id="formCrearServicio">
-                    <input type="text" id="nombreServicio" placeholder="Nombre del servicio" required>
-                    <textarea id="descripcionServicio" placeholder="Descripción del servicio" required></textarea>
-                    <button type="submit">Crear</button>
-                </form>
-            </div>
-    
-            <!-- Formulario de actualización de servicio -->
-            <div id="actualizarServicio" style="display:none;">
-                <h3>Actualizar Servicio</h3>
-                <select id="selectServicios">
-                    <!-- Aquí se cargarán los servicios existentes -->
-                </select>
-                <input type="text" id="nombreNuevoServicio" placeholder="Nuevo nombre del servicio" required>
-                <textarea id="descripcionNuevoServicio" placeholder="Nueva descripción del servicio" required></textarea>
-                <button id="btnActualizarServicio">Actualizar</button>
-            </div>
-    
-            <div id="serviciosUsuario">
-                <h3>Servicios Creados por el Usuario</h3>
-                <!-- Aquí se mostrarán los servicios creados por el usuario -->
-            </div>
+        <h1>Crear Manzana</h1>
+    <form id="form-crear-manzana">
+      <label for="nombre_manzana">Nombre de la Manzana:</label>
+      <input type="text" id="nombre_manzana" required>
+  
+      <label for="localidad_manzana">Localidad:</label>
+      <input type="text" id="localidad_manzana" required>
+  
+      <label for="direccion_manzana">Dirección:</label>
+      <input type="text" id="direccion_manzana" required>
+  
+      <button type="submit">Crear Manzana</button>
+    </form>
+  
+    <h2>Manzanas Registradas</h2>
+    <ul id="lista-manzanas"></ul>
+
+
+    <form id="actualizarManzanaForm">
+        <label for="manzanaSelect">Seleccione una manzana para actualizar:</label>
+        <select id="manzanaSelect" name="Codigo_manzanas" required></select>
+        
+        <label for="nombre_man">Nuevo nombre de la manzana:</label>
+        <input type="text" id="nombre_man" name="nombre_man" required>
+        
+        <label for="Localidad">Nueva localidad:</label>
+        <input type="text" id="Localidad" name="Localidad" required>
+        
+        <label for="Direccion">Nueva dirección:</label>
+        <input type="text" id="Direccion" name="Direccion" required>
+        
+        <button type="submit">Actualizar Manzana</button>
+    </form>
 
             
 
@@ -64,8 +65,8 @@
 
     <script>
 
-     // Mostrar los servicios cuando la página cargue
-     function mostrarServiciosUsuario() {
+   // Mostrar los servicios cuando la página cargue
+        function mostrarServiciosUsuario() {
             fetch('/api/servicios')
                 .then(response => response.json())
                 .then(services => {
@@ -182,7 +183,6 @@
 
         // Mostrar los servicios creados al cargar la página
         mostrarServiciosUsuario();
-
 
 
     </script>
