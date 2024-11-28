@@ -312,10 +312,17 @@ app.delete('/eliminarUsuario',async(req,res)=>{
     }
 })
 
-
+//Actualizar usuario
 app.put('/putUsuario', sync(req, res)=>{
     try{
-        const query=''
+        const {Codigo_usuario}=req.body;
+        const query='UPDATE usuario SET tipo_documento=?, documento=?, Apellidos=?,Telefono=?,Email=?,Ciudad=?,Direccion=?,Ocupacion=?,Rol=? WHERE Codigo_mujer=?'
+        const conect = await mysql2.createConnection(db); 
+        const [actualizarUsuario] = await conect.execute(query,[Codigo_usuario]);
+        res.status(200).json(actualizarUsuario)
+    }catch (error) {
+        console.error("Error en el servidor:", error);
+        res.status(500).send("Error en el servidor");
     }
 })
 
