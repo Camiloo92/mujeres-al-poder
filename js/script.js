@@ -54,10 +54,17 @@ function eliminarUsuario(usuario) {
         },
         body: JSON.stringify({ usuarioId: usuario.Codigo_mujer })
     })
-        .then((res) => res.json())
-        .then((datos) => {
-
-        })
+    .then((res) => res.json())
+    .then((datos) => {
+        if (datos.operacion == 'Operación exitosa') {
+            alert(datos.operacion)
+            cargarUsuarios()
+        }
+        else{
+            alert('Error al eliminar usuario')
+        }    
+    })
+    .catch((err) => alert(`Usuario eliminado con éxito`))
 
 }
 

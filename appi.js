@@ -301,11 +301,14 @@ app.put('/api/servicios/:id', async (req, res) => {
 //eliminar usuario
 app.delete('/eliminarUsuario',async(req,res)=>{
     try{
-        const {Codigo_usuario}=req.body;
-        const query ='DELETE FROM usuario WHERE Codigo_usuario=?';
+        const { usuarioId }=req.body;
+
+        const querySolicitudes = 'DELETE FROM Solicitudes WHERE fk_Codigo_mujer2 =?'
+        const query ='DELETE FROM usuario WHERE Codigo_mujer=?';
         const conect = await mysql2.createConnection(db);  
-        const [borrarUsuarios] = await conect.execute(query,[Codigo_usuario]);
-        res.status(200).json(borrarUsuarios)
+        await conect.execute(querySolicitudes,[usuarioId]);
+        await conect.execute(query,[usuarioId]);
+        res.status(200).json({operacion: 'Operación exitosa'})
     }catch (error) {
         console.error("Error en el servidor:", error);
         res.status(500).send("Error en el servidor");
