@@ -6,7 +6,8 @@ const path = require ('path');
 const { error } = require('console');
 const { send } = require('process');
 const session = require(('express-session'));
-const cors = require('cors')
+const cors = require('cors');
+const { connect } = require('http2');
 
 
 const app = express();
@@ -474,12 +475,23 @@ app.post('/crearManzana', async(req,res)=>{
         res.status(500).send("Error en el servidor");
         }
     })
+    //Actualizar Manzana
+    //http://localhost:3000/actualizarManzana
 app.put('/actualizarManzana', async(req,res)=>{
     try{
-        const {Codigo_manzanas, nombre, localidad, direccion}=req.body
+        const {Codigo_manzanas, nombre, localidad, direccion,servicios}=req.body
         const conect = await mysql2.createConnection(db)
-        const query='UPDATE manzana SET  nombre_man=? WHERE Codigo_manzanas=? '
-        await conect.execute(query,[nombre, localidad, direccion, Codigo_manzanas])
+        const query='UPDATE manzanas SET nombre_man=?, localidad=?, direccion=? WHERE Codigo_manzanas=?'
+        await conect.execute(query,[nombre,localidad,direccion, Codigo_manzanas])
+        const deletequery = 'DELETE FROM manzanas_servicios WHERE Codigo_manzanas=?'
+        await conect.execute (deletequery, [Codigo_manzanas])
+        const createQuery = 'INSERT INTO manzanas_servicios (fk_codigo_manzanas1,fk_codigo_servicios1) VALUES (?,?)'
+        const insertPromise = servicios
+            .filter(servicio=>servicio.checked)
+            .map(servicio=>conect.execute(createQuery, [Codigo_manzanas, servicio.id]))
+        await Promise.all(insertPromise)
+        res.status(200).json({message: 'Manzana actualizada con éxito'})
+        
     }catch (error) {
         console.error("Error en el servidor:", error);
         res.status(500).send("Error en el servidor");
