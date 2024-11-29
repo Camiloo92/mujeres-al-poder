@@ -326,6 +326,77 @@ app.put('/putUsuario', async(req, res)=>{
     }
 })
 
+//mostrar Manzanas
+app.get('/mostrarManzanas', async(req,res)=>{
+    try{
+   
+       const query='SELECT * FROM manzanas'
+       const conect= await mysql2.createConnection(db)
+       const [mostrarManzanas] = await conect.execute(query)
+       res.status(200).json(mostrarManzanas)
+    }catch (error) {
+        console.error("Error en el servidor:", error);
+        res.status(500).send("Error en el servidor");
+    }
+
+})
+
+//mostrar manzanas con servicios
+//  http://localhost:3000/mostrarManzanasServicios?Codigo_manzanas=?
+
+app.get('/mostrarManzanasServicios', async(req,res)=>{
+    try{
+        const {Codigo_manzanas}=req.query
+        const query='SELECT * FROM manzanas WHERE Codigo_manzanas=?'
+        const conect= await mysql2.createConnection(db)
+        const [mostrarManzanas] = await conect.execute(query,[Codigo_manzanas])
+        const query2=`SELECT s.Codigo_servicios,s.Nombre_servicio, 
+        CASE WHEN ms.fk_codigo_manzanas1 IS NOT NULL THEN true ELSE false END
+         AS checked FROM servicios s LEFT JOIN manzanas_servicios ms 
+         ON s.Codigo_servicios = ms.fk_codigo_servicios1 
+         AND ms.fk_codigo_manzanas1 = ?  ORDER BY s.Codigo_servicios` 
+         const [EjecutarQuery] = await conect.execute(query2,[Codigo_manzanas])
+         const servicios = EjecutarQuery.map(servicio =>
+            ({...servicio,checked: servicio.checked == 1}))
+        res.status(200).json({
+            Codigo_manzanas:mostrarManzanas.Codigo_manzanas,
+            manzanaNombre: mostrarManzanas.nombre_man,
+            servicios
+        })
+     }catch (error) {
+         console.error("Error en el servidor:", error);
+         res.status(500).send("Error en el servidor");
+     }
+    
+})
+
+//Crear manzana
+
+app.post('/CrearManzana', async(req,res)=>{
+    try{
+        const {nombre, localidad, direccion, servicio}=req.body
+        const conect = await mysql2.createConnection(db)
+        const query ='INSERT INTO manzanas (nombre_man, Localidad, Direccion) VALUES (?,?,?)'
+        const {crearManzanas} = await conect.execute(query,[nombre, localidad, direccion])
+        const insertarPromesa= servicio.map(Codigo_servicios=>{
+            const queryServicio='INSERT INTO manzanas_servicios (fk_codigo_manzanas1,fk_codigo_servicios1) values (?,?)'
+            return conect.execute(queryServicio, [crearManzanas,Codigo_servicios])
+        })
+        const resultado = await Promise.all(insertarPromesa)
+        if (resultado.some(resultado=>resultado.affectedRows===0)){
+            return res.status(500).json({message:'Error en el serv.'})
+        }
+        res.status(200).json({message:'Ok'})
+    
+    }catch(error) {
+        console.error("Error en el servidor:", error);
+        res.status(500).send("Error en el servidor");
+        }
+    })
+
+
+
+
 // ruta para cerrar sesion
 app.get('/cerrar-sesion', (req, res) => {
     // Eliminar la sesión del usuario
