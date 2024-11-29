@@ -68,5 +68,33 @@ function eliminarUsuario(usuario) {
     .then((datos)=>{
 
     })
-    
+} 
+function cargarManzana(){
+    fetch('http://localhost:3000/mostrarManzanas')
+    .then((res)=> res.json())
+    .then((datos)=>{
+        const tablaManzanas=document.getElementById('tablaManzanas')
+        tablaManzanas.innerHTML=''
+        datos.forEach(manzana => {
+            const fila =document.createElement('tr')
+
+            const celdaCodigo=document.createElement('td')
+            celdaCodigo.textContent=manzana.Codigo_manzanas
+            fila.appendChild(celdaCodigo)
+
+            const nombreManzana=document.createElement('td')
+            nombreManzana.textContent=manzana.nombre_man
+            fila.appendChild(nombreManzana)
+
+            const localidad=document.createElement('td')
+            localidad.textContent=manzana.Localidad
+            fila.appendChild(localidad)
+
+            const direccion=document.createElement('td')
+            direccion.textContent=manzana.Direccion
+            fila.appendChild(direccion)
+
+            tablaManzanas.appendChild(fila)
+        })
+    })
 }
