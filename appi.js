@@ -449,7 +449,7 @@ app.get('/mostrarManzanasServicios', async(req,res)=>{
 
 //Crear manzana
 
-app.post('/CrearManzana', async(req,res)=>{
+app.post('/crearManzana', async(req,res)=>{
     try{
         const {nombre, localidad, direccion, servicio}=req.body
         const conect = await mysql2.createConnection(db)
@@ -470,6 +470,19 @@ app.post('/CrearManzana', async(req,res)=>{
         res.status(500).send("Error en el servidor");
         }
     })
+app.put('/actualizarManzana', async(req,res)=>{
+    try{
+        const {Codigo_manzanas, nombre, localidad, direccion}=req.body
+        const conect = await mysql2.createConnection(db)
+        const query='UPDATE manzana SET  nombre_man=? WHERE Codigo_manzanas=? '
+        await conect.execute(query,[nombre, localidad, direccion, Codigo_manzanas])
+    }catch (error) {
+        console.error("Error en el servidor:", error);
+        res.status(500).send("Error en el servidor");
+    }
+     
+
+})
 
 
 
