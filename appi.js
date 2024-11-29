@@ -316,18 +316,19 @@ app.delete('/eliminarUsuario',async(req,res)=>{
 })
 
 //Actualizar usuario
-app.put('/putUsuario', async(req, res)=>{
-    try{
-        const {Codigo_usuario}=req.body;
-        const query='UPDATE usuario SET tipo_documento=?, documento=?, Apellidos=?,Telefono=?,Email=?,Ciudad=?,Direccion=?,Ocupacion=?,Rol=? WHERE Codigo_mujer=?'
-        const conect = await mysql2.createConnection(db); 
-        const [actualizarUsuario] = await conect.execute(query,[Codigo_usuario]);
-        res.status(200).json(actualizarUsuario)
-    }catch (error) {
+app.put('/putUsuario', async (req, res) => {
+    try {
+        const { idUsu, nombreUsu, apellidoUsu, telefonoUsu, emailUsu } = req.body;
+        const query = 'UPDATE usuario SET nombre_usu=?, Apellidos=?, Telefono=?, Email=? WHERE Codigo_mujer=?';
+        const conect = await mysql2.createConnection(db);
+        await conect.execute(query, [nombreUsu, apellidoUsu, telefonoUsu, emailUsu, idUsu]);
+        res.status(200).json({ operacion: 'Operación exitosa' });
+    } catch (error) {
         console.error("Error en el servidor:", error);
         res.status(500).send("Error en el servidor");
     }
-})
+});
+
 
 //mostrar Manzanas
 app.get('/mostrarManzanas', async(req,res)=>{

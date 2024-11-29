@@ -38,8 +38,6 @@ function cargarUsuarios() {
                 const accion = document.createElement('td')
                 crearBotones(accion, fila, usuario)
 
-
-
                 tablaUsuarios.appendChild(fila)
 
             });
@@ -94,6 +92,7 @@ function cambiarCelda(usuario, fila, accion) {
     
     const botonGuardar = document.createElement('button')
     botonGuardar.textContent = 'guardar' 
+    botonGuardar.onclick = () => actualizar(fila, usuario)
     accion.appendChild(botonGuardar)
     const botonCancelar = document.createElement('button')
     botonCancelar.onclick = () => cancelar(usuario, fila)
@@ -121,13 +120,24 @@ function actualizar(fila, usuario) {
     const telefono = fila.cells[5].querySelector('input').value || usuario.Telefono
     const email = fila.cells[6].querySelector('input').value || usuario.Email
 
-    fetch('', {
+    fetch('http://localhost:3000/putUsuario', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({idUsu: usuario.Codigo_mujer, nombreUsu: nombre, apellidoUsu: apellidos, telefonoUsu: telefono, emailUsu: email })
     })
+    .then(res => res.json())
+    .then(data => {
+        if (data.operacion == 'Operación exitosa') {
+            alert(datos.operacion)
+            cargarUsuarios()
+        }
+        else{
+            alert('Error al eliminar usuario')
+        } 
+    })
+    .catch((err) => alert(`Error ${err}`))
 } 
 function cargarManzana(){
     fetch('http://localhost:3000/mostrarManzanas')
