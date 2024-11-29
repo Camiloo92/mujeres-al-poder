@@ -411,6 +411,20 @@ app.get('/cerrar-sesion', (req, res) => {
     });
 });
 
+
+// Ruta para obtener usuarios
+app.get('/obtenerUsuarios', async(req, res) => {
+    try {
+        const query = 'SELECT * FROM usuario'
+        const conect = await mysql2.createConnection(db)
+        const [usuarios] = await conect.execute(query)
+        res.status(200).json(usuarios)
+    } catch (error) {
+        console.error("Error en el servidor:", error);
+        res.status(500).send("Error en el servidor");
+    }
+})
+
 // Apertura del servidor
 app.listen(3000, () => {
     console.log('Servidor Node.js escuchando en el puerto 3000');
