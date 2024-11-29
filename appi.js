@@ -6,7 +6,8 @@ const path = require('path');
 const { error } = require('console');
 const { send } = require('process');
 const session = require(('express-session'));
-const cors = require('cors')
+const cors = require('cors');
+const { connect } = require('http2');
 
 
 const app = express();
@@ -485,8 +486,8 @@ app.get('/obtenerServicios', async(req, res) => {
     } catch (error) {
         console.error("Error en el servidor:", error);
         res.status(500).send("Error en el servidor");
-    }
-})
+        }
+    })
 
 
 
