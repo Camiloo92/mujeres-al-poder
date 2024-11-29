@@ -2,7 +2,7 @@ const express = require('express');
 const bodyparser = require('body-parser');
 const mysql2 = require('mysql2/promise');
 const moment = require(('moment'));
-const path = require('path');
+const path = require ('path');
 const { error } = require('console');
 const { send } = require('process');
 const session = require(('express-session'));
@@ -111,7 +111,7 @@ app.post('/ingreso', async (req, res) => {
 
     try {
         conect = await mysql2.createConnection(db);
-
+        
         // Realizar la consulta a la base de datos
         const [datos] = await conect.execute(
             'SELECT * FROM usuario WHERE documento = ? AND tipo_documento = ? AND contrasena = ?',
@@ -184,7 +184,7 @@ app.post('/guardar-Servicios_Usu', async (req, res) => {
 
         // Verificar sesión
         console.log("Sesión actual:", req.session);
-
+        
         if (!req.session.documento) {
             return res.status(401).send("Sesión no válida");
         }
@@ -236,19 +236,19 @@ app.post('/guardar-Servicios_Usu', async (req, res) => {
 
 // Ruta para listar servicios de un usuario
 app.post('/Listar-servicios-usuario', async (req, res) => {
-    const Documento = req.session.documento;
+    const Documento = req.session.documento; 
 
     try {
         const conect = await mysql2.createConnection(db);  // Crear la conexión a la base de datos
 
-
+       
         const [resultados] = await conect.execute(
             `SELECT s.Nombre_servicio, 
                     DATE_FORMAT(so.Hora_asistencia, '%Y-%m-%d %H:%i:%s') AS Dia_Hora
              FROM servicios s
              INNER JOIN solicitudes so ON s.Codigo_servicios = so.fk_Codigo_servicios
              INNER JOIN usuario u ON u.Codigo_mujer = so.fk_Codigo_mujer2
-             WHERE u.documento = ?`,
+             WHERE u.documento = ?`, 
             [Documento]
         );
 
@@ -283,55 +283,55 @@ app.get('/obtener-usuario', (req, res) => {
 // Ruta para eliminar los servicios
 app.delete('/eliminar-servicio/:codigoServicio', async (req, res) => {
     const { codigoServicio } = req.params;
-
+  
     try {
-        const [result] = await pool.query('DELETE FROM servicios WHERE Codigo_servicios = ?', [codigoServicio]);
-
-        if (result.affectedRows > 0) {
-            res.status(200).send({ mensaje: 'Servicio eliminado correctamente' });
-        } else {
-            res.status(404).send({ mensaje: 'Servicio no encontrado' });
-        }
+      const [result] = await pool.query('DELETE FROM servicios WHERE Codigo_servicios = ?', [codigoServicio]);
+  
+      if (result.affectedRows > 0) {
+        res.status(200).send({ mensaje: 'Servicio eliminado correctamente' });
+      } else {
+        res.status(404).send({ mensaje: 'Servicio no encontrado' });
+      }
     } catch (error) {
-        console.error('Error al eliminar el servicio:', error);
-        res.status(500).send({ mensaje: 'Error al eliminar el servicio' });
+      console.error('Error al eliminar el servicio:', error);
+      res.status(500).send({ mensaje: 'Error al eliminar el servicio' });
     }
-});
+  });
 
 
 // Ruta para crear un servicio
 app.post('/crear-servicio', async (req, res) => {
     const { nombre, descripcion } = req.body;
-
+  
     if (!nombre || !descripcion) {
-        return res.status(400).json({ error: "Faltan los campos 'nombre' o 'descripcion'" });
+      return res.status(400).json({ error: "Faltan los campos 'nombre' o 'descripcion'" });
     }
-
+  
     try {
-        // Insertar el servicio en la base de datos
-        const [result] = await pool.query(
-            'INSERT INTO servicios (Nombre_servicio, Descripcion) VALUES (?, ?)',
-            [nombre, descripcion]
-        );
-
-        // Verificar si el servicio fue creado exitosamente
-        if (result.affectedRows > 0) {
-            // Retornar respuesta JSON con el servicio creado
-            res.status(201).json({
-                message: 'Servicio creado exitosamente',
-                servicio: { nombre, descripcion, id: result.insertId }
-            });
-        } else {
-            res.status(500).json({ error: 'Error al crear el servicio' });
-        }
-
+      // Insertar el servicio en la base de datos
+      const [result] = await pool.query(
+        'INSERT INTO servicios (Nombre_servicio, Descripcion) VALUES (?, ?)', 
+        [nombre, descripcion]
+      );
+  
+      // Verificar si el servicio fue creado exitosamente
+      if (result.affectedRows > 0) {
+        // Retornar respuesta JSON con el servicio creado
+        res.status(201).json({ 
+          message: 'Servicio creado exitosamente', 
+          servicio: { nombre, descripcion, id: result.insertId }
+        });
+      } else {
+        res.status(500).json({ error: 'Error al crear el servicio' });
+      }
+  
     } catch (error) {
-        console.error('Error al crear servicio:', error);
-        res.status(500).json({ error: 'Hubo un error al crear el servicio' });
+      console.error('Error al crear servicio:', error);
+      res.status(500).json({ error: 'Hubo un error al crear el servicio' });
     }
-});
-
-
+  });
+  
+  
 
 // Ruta para vizualizar los servicos disponibles desde el apartado del admin
 app.get('/api/servicios', async (req, res) => {
@@ -377,17 +377,17 @@ app.put('/api/servicios/:id', async (req, res) => {
 });
 
 //eliminar usuario
-app.delete('/eliminarUsuario', async (req, res) => {
-    try {
-        const { usuarioId } = req.body;
+app.delete('/eliminarUsuario',async(req,res)=>{
+    try{
+        const { usuarioId }=req.body;
 
         const querySolicitudes = 'DELETE FROM Solicitudes WHERE fk_Codigo_mujer2 =?'
-        const query = 'DELETE FROM usuario WHERE Codigo_mujer=?';
-        const conect = await mysql2.createConnection(db);
-        await conect.execute(querySolicitudes, [usuarioId]);
-        await conect.execute(query, [usuarioId]);
-        res.status(200).json({ operacion: 'Operación exitosa' })
-    } catch (error) {
+        const query ='DELETE FROM usuario WHERE Codigo_mujer=?';
+        const conect = await mysql2.createConnection(db);  
+        await conect.execute(querySolicitudes,[usuarioId]);
+        await conect.execute(query,[usuarioId]);
+        res.status(200).json({operacion: 'Operación exitosa'})
+    }catch (error) {
         console.error("Error en el servidor:", error);
         res.status(500).send("Error en el servidor");
     }
@@ -409,14 +409,14 @@ app.put('/putUsuario', async (req, res) => {
 
 
 //mostrar Manzanas
-app.get('/mostrarManzanas', async (req, res) => {
-    try {
-
-        const query = 'SELECT * FROM manzanas'
-        const conect = await mysql2.createConnection(db)
-        const [mostrarManzanas] = await conect.execute(query)
-        res.status(200).json(mostrarManzanas)
-    } catch (error) {
+app.get('/mostrarManzanas', async(req,res)=>{
+    try{
+   
+       const query='SELECT * FROM manzanas'
+       const conect= await mysql2.createConnection(db)
+       const [mostrarManzanas] = await conect.execute(query)
+       res.status(200).json(mostrarManzanas)
+    }catch (error) {
         console.error("Error en el servidor:", error);
         res.status(500).send("Error en el servidor");
     }
@@ -426,68 +426,80 @@ app.get('/mostrarManzanas', async (req, res) => {
 //mostrar manzanas con servicios
 //  http://localhost:3000/mostrarManzanasServicios?Codigo_manzanas=?
 
-app.get('/mostrarManzanasServicios', async (req, res) => {
-    try {
-        const { Codigo_manzanas } = req.query
-        const query = 'SELECT * FROM manzanas WHERE Codigo_manzanas=?'
-        const conect = await mysql2.createConnection(db)
-        const [mostrarManzanas] = await conect.execute(query, [Codigo_manzanas])
-        const query2 = `SELECT s.Codigo_servicios,s.Nombre_servicio, 
+app.get('/mostrarManzanasServicios', async(req,res)=>{
+    try{
+        const {Codigo_manzanas}=req.query
+        const query='SELECT * FROM manzanas WHERE Codigo_manzanas=?'
+        const conect= await mysql2.createConnection(db)
+        const [mostrarManzanas] = await conect.execute(query,[Codigo_manzanas])
+        const query2=`SELECT s.Codigo_servicios,s.Nombre_servicio, 
         CASE WHEN ms.fk_codigo_manzanas1 IS NOT NULL THEN true ELSE false END
          AS checked FROM servicios s LEFT JOIN manzanas_servicios ms 
          ON s.Codigo_servicios = ms.fk_codigo_servicios1 
-         AND ms.fk_codigo_manzanas1 = ?  ORDER BY s.Codigo_servicios`
-        const [EjecutarQuery] = await conect.execute(query2, [Codigo_manzanas])
-        const servicios = EjecutarQuery.map(servicio =>
-            ({ ...servicio, checked: servicio.checked == 1 }))
+         AND ms.fk_codigo_manzanas1 = ?  ORDER BY s.Codigo_servicios` 
+         const [EjecutarQuery] = await conect.execute(query2,[Codigo_manzanas])
+         const servicios = EjecutarQuery.map(servicio =>
+            ({...servicio,checked: servicio.checked == 1}))
         res.status(200).json({
-            Codigo_manzanas: mostrarManzanas.Codigo_manzanas,
+            Codigo_manzanas:mostrarManzanas.Codigo_manzanas,
             manzanaNombre: mostrarManzanas.nombre_man,
             servicios
         })
-    } catch (error) {
-        console.error("Error en el servidor:", error);
-        res.status(500).send("Error en el servidor");
-    }
-
+     }catch (error) {
+         console.error("Error en el servidor:", error);
+         res.status(500).send("Error en el servidor");
+     }
+    
 })
 
 //Crear manzana
 
-app.post('/CrearManzana', async (req, res) => {
-    try {
-        const { nombreManzana, localidadManzana, direccionManzana, servicios } = req.body
+app.post('/crearManzana', async(req,res)=>{
+    try{
+        const {nombre, localidad, direccion, servicio}=req.body
         const conect = await mysql2.createConnection(db)
-        const query = 'INSERT INTO manzanas (nombre_man, Localidad, Direccion) VALUES (?,?,?)'
-        const [crearManzanas]  = await conect.execute(query, [nombreManzana, localidadManzana, direccionManzana])
-        const idManzana = crearManzanas.insertId
-        const insertarPromesa = servicios.map(Codigo_servicios => {
-            const queryServicio = 'INSERT INTO manzanas_servicios (fk_codigo_manzanas1,fk_codigo_servicios1) values (?,?)'
-            return conect.execute(queryServicio, [idManzana, Codigo_servicios])
+        const query ='INSERT INTO manzanas (nombre_man, Localidad, Direccion) VALUES (?,?,?)'
+        const {crearManzanas} = await conect.execute(query,[nombre, localidad, direccion])
+        const insertarPromesa= servicio.map(Codigo_servicios=>{
+            const queryServicio='INSERT INTO manzanas_servicios (fk_codigo_manzanas1,fk_codigo_servicios1) values (?,?)'
+            return conect.execute(queryServicio, [crearManzanas,Codigo_servicios])
         })
         const resultado = await Promise.all(insertarPromesa)
-        if (resultado.some(resultado => resultado.affectedRows === 0)) {
-            return res.status(500).json({ message: 'Error en el serv.' })
+        if (resultado.some(resultado=>resultado.affectedRows===0)){
+            return res.status(500).json({message:'Error en el serv.'})
         }
-        res.status(200).json({ operacion: 'Operación exitosa' })
-
-    } catch (error) {
-        console.error("Error en el servidor:", error);
-        res.status(500).send("Error en el servidor");
-    }
-})
-
-app.get('/obtenerServicios', async(req, res) => {
-    try {
-        const conect = await mysql2.createConnection(db)
-        const query = 'SELECT * FROM servicios'
-        const[servicios]  = await conect.execute(query)
-        res.status(200).json(servicios)
-    } catch (error) {
+        res.status(200).json({message:'Ok'})
+    
+    }catch(error) {
         console.error("Error en el servidor:", error);
         res.status(500).send("Error en el servidor");
         }
     })
+    //Actualizar Manzana
+    //http://localhost:3000/actualizarManzana
+app.put('/actualizarManzana', async(req,res)=>{
+    try{
+        const {Codigo_manzanas, nombre, localidad, direccion,servicios}=req.body
+        const conect = await mysql2.createConnection(db)
+        const query='UPDATE manzanas SET nombre_man=?, localidad=?, direccion=? WHERE Codigo_manzanas=?'
+        await conect.execute(query,[nombre,localidad,direccion, Codigo_manzanas])
+        const deletequery = 'DELETE FROM manzanas_servicios WHERE Codigo_manzanas=?'
+        await conect.execute (deletequery, [Codigo_manzanas])
+        const createQuery = 'INSERT INTO manzanas_servicios (fk_codigo_manzanas1,fk_codigo_servicios1) VALUES (?,?)'
+        const insertPromise = servicios
+            .filter(servicio=>servicio.checked)
+            .map(servicio=>conect.execute(createQuery, [Codigo_manzanas, servicio.id]))
+        await Promise.all(insertPromise)
+        res.status(200).json({message: 'Manzana actualizada con éxito'})
+        
+    }catch (error) {
+        console.error("Error en el servidor:", error);
+        res.status(500).send("Error en el servidor");
+    }
+     
+
+})
+
 
 
 
@@ -499,15 +511,15 @@ app.get('/cerrar-sesion', (req, res) => {
             console.error('Error al destruir la sesión:', err);
             return res.status(500).send('Error al cerrar sesión');
         }
-
+        
         // Redirigir al usuario a la página de login o inicio
-        res.redirect('/login.html');
+        res.redirect('/login.html');  
     });
 });
 
 
 // Ruta para obtener usuarios
-app.get('/obtenerUsuarios', async (req, res) => {
+app.get('/obtenerUsuarios', async(req, res) => {
     try {
         const query = 'SELECT * FROM usuario'
         const conect = await mysql2.createConnection(db)
