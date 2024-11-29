@@ -313,7 +313,7 @@ app.delete('/eliminarUsuario',async(req,res)=>{
 })
 
 //Actualizar usuario
-app.put('/putUsuario', sync(req, res)=>{
+app.put('/putUsuario', async(req, res)=>{
     try{
         const {Codigo_usuario}=req.body;
         const query='UPDATE usuario SET tipo_documento=?, documento=?, Apellidos=?,Telefono=?,Email=?,Ciudad=?,Direccion=?,Ocupacion=?,Rol=? WHERE Codigo_mujer=?'
@@ -339,6 +339,20 @@ app.get('/cerrar-sesion', (req, res) => {
         res.redirect('/login.html');  
     });
 });
+
+
+// Ruta para obtener usuarios
+app.get('/obtenerUsuarios', async(req, res) => {
+    try {
+        const query = 'SELECT * FROM usuario'
+        const conect = await mysql2.createConnection(db)
+        const [usuarios] = await conect.execute(query)
+        res.status(200).json(usuarios)
+    } catch (error) {
+        console.error("Error en el servidor:", error);
+        res.status(500).send("Error en el servidor");
+    }
+})
 
 // Apertura del servidor
 app.listen(3000, () => {
