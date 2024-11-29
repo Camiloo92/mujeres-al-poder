@@ -313,7 +313,7 @@ app.delete('/eliminarUsuario',async(req,res)=>{
 })
 
 //Actualizar usuario
-app.put('/putUsuario', sync(req, res)=>{
+app.put('/putUsuario', async(req, res)=>{
     try{
         const {Codigo_usuario}=req.body;
         const query='UPDATE usuario SET tipo_documento=?, documento=?, Apellidos=?,Telefono=?,Email=?,Ciudad=?,Direccion=?,Ocupacion=?,Rol=? WHERE Codigo_mujer=?'
